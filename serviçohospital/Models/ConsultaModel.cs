@@ -1,24 +1,31 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace serviçohospital.Models
+namespace serviçohospital.Models;
+
+
+
+
+   public enum StatusConsulta
 {
-
-
-
-       public enum StatusConsulta
-    {
-        Agendado,
-        Cancelada,
-        Feita
-    }
-    public class Consulta
-    {
-        [Required]
-        int id { get; set; }
-        int PacientID { get;set; }
-        int ProfissionalID { get; set; }
-        DateTime DataHora { get;set; }
-        StatusConsulta Status { get; set; }
-        string? Prontuario { get; set; }
-    }
+    Agendado,
+    Cancelada,
+    Feita
+}
+public class Consulta
+{
+    
+    [Key]
+     public int id { get; set; }
+    [ForeignKey("PacienteId")]
+    public int PacientID { get;set; }
+    [Required]
+    public int ProfissionalID { get; set; }
+    [ForeignKey("ProfissionalId")]
+    public ProfissionalSaude Profissional { get; set; }
+    [Required]
+    public DateTime DataHora { get; set; } = DateTime.Now;
+    [Required]
+    public StatusConsulta Status { get; set; }
+    public string? Prontuario { get; set; }
 }

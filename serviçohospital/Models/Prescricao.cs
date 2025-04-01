@@ -1,15 +1,26 @@
-﻿namespace serviçohospital.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace serviçohospital.Models;
+
+public class Prescricao
 {
-    public class Prescricao
-    {
-        public int ID { get; set; }
-        public int ConsultaID { get; set; }
-        public Consulta consulta { get;set; }
+    [Key]
+    public int ID { get; set; }
+
+    [Required]
+    public int ConsultaID { get; set; }
+
+    [ForeignKey("ConsultaID")]
+    public Consulta consulta { get;set; }
 
 
+    [Required]
+    [MaxLength(200)]
+    public string Medicamento { get; set; }
 
-        public string? Medicamento { get; set; }
-        public string? Dosagem { get; set; }
-        public DateTime DataPrescricao { get; set; }
-    }
+    [Required]
+    [MaxLength(100)]
+    public string? Dosagem { get; set; }
+    public DateTime DataPrescricao { get; set; } = DateTime.UtcNow;
 }
