@@ -16,8 +16,9 @@ namespace serviçohospital.Context
         public DbSet<Administracao> administracaos { get; set; }
         public DbSet<Usuario> usuarios { get; set; }
         public DbSet<Seguranca> seguranca { get;set; }
-       
-       
+        public DbSet<Historico> Historicos { get; set; }
+
+
     }
-  
+
 }
