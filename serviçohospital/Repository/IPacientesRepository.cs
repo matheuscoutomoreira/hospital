@@ -4,9 +4,9 @@ namespace serviçohospital.Repository
 {
     public interface IPacientesRepository
     {
-       Task< Paciente> Create(Paciente paciente);
-        Task<Paciente> Update(Paciente paciente);
-        Task<Paciente> Delete(int id);
+       Task< Paciente> CreateAsync(Paciente paciente);
+        Task<Paciente> UpdateAsync(Paciente paciente);
+        Task<Paciente> DeleteAsync(int id);
         // pegar dados do paciente
         Task<Paciente> GetByIdAsync(int id);
         Task<IEnumerable<Paciente>> GetAllAsync();

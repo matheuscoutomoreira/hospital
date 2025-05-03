@@ -14,11 +14,10 @@ namespace serviçohospital.Repository
 
         //atualiza o proprio cadastro
 
-        Task<ProfissionalSaude> AtualizarDadosAsync(ProfissionalSaude profissional);
-
+       
 
         // verifica se ja existe um crm ou cpf
-        Task<bool> ExisteCpfAsync(string cpf);
+        
         Task<bool> ExisteregistroAsync(string registro);//CRM
     }
 }

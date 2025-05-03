@@ -12,8 +12,8 @@ using serviçohospital.Context;
 namespace serviçohospital.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250401005234_meumigrations")]
-    partial class meumigrations
+    [Migration("20250503211557_migração1.0")]
+    partial class migração10
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,79 @@ namespace serviçohospital.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("Historico", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Observacoes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("PacienteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfissionalSaudeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoEvento")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PacienteId");
+
+                    b.HasIndex("ProfissionalSaudeId");
+
+                    b.ToTable("Historicos");
+                });
+
+            modelBuilder.Entity("Prescricao", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("ConsultaID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataPrescricao")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Dosagem")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("HistoricoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Medicamento")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ConsultaID");
+
+                    b.HasIndex("HistoricoId");
+
+                    b.ToTable("Prescricoes");
+                });
 
             modelBuilder.Entity("serviçohospital.Models.Administracao", b =>
                 {
@@ -49,25 +122,22 @@ namespace serviçohospital.Migrations
 
             modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DataHora")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("PacientID")
+                    b.Property<int?>("HistoricoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PacienteId")
+                    b.Property<int>("PacienteId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProfissionalID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProfissionalId")
+                    b.Property<int>("ProfissionalSaudeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Prontuario")
@@ -76,11 +146,13 @@ namespace serviçohospital.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("HistoricoId");
 
                     b.HasIndex("PacienteId");
 
-                    b.HasIndex("ProfissionalId");
+                    b.HasIndex("ProfissionalSaudeId");
 
                     b.ToTable("Consultas");
                 });
@@ -114,37 +186,6 @@ namespace serviçohospital.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Pacientes");
-                });
-
-            modelBuilder.Entity("serviçohospital.Models.Prescricao", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("ConsultaID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataPrescricao")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Dosagem")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Medicamento")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ConsultaID");
-
-                    b.ToTable("Prescricoes");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.ProfissionalSaude", b =>
@@ -217,7 +258,8 @@ namespace serviçohospital.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("PacienteId")
                         .HasColumnType("int");
@@ -227,7 +269,8 @@ namespace serviçohospital.Migrations
 
                     b.Property<string>("Senha")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
@@ -243,30 +286,67 @@ namespace serviçohospital.Migrations
                     b.ToTable("usuarios");
                 });
 
-            modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
+            modelBuilder.Entity("Historico", b =>
                 {
-                    b.HasOne("serviçohospital.Models.Paciente", null)
-                        .WithMany("Consultas")
-                        .HasForeignKey("PacienteId");
-
-                    b.HasOne("serviçohospital.Models.ProfissionalSaude", "Profissional")
-                        .WithMany("Consultas")
-                        .HasForeignKey("ProfissionalId")
+                    b.HasOne("serviçohospital.Models.Paciente", "Paciente")
+                        .WithMany()
+                        .HasForeignKey("PacienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Profissional");
+                    b.HasOne("serviçohospital.Models.ProfissionalSaude", "ProfissionalSaude")
+                        .WithMany()
+                        .HasForeignKey("ProfissionalSaudeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Paciente");
+
+                    b.Navigation("ProfissionalSaude");
                 });
 
-            modelBuilder.Entity("serviçohospital.Models.Prescricao", b =>
+            modelBuilder.Entity("Prescricao", b =>
                 {
                     b.HasOne("serviçohospital.Models.Consulta", "consulta")
-                        .WithMany()
+                        .WithMany("Prescricoes")
                         .HasForeignKey("ConsultaID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Historico", "Historico")
+                        .WithMany("Prescricoes")
+                        .HasForeignKey("HistoricoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Historico");
+
                     b.Navigation("consulta");
+                });
+
+            modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
+                {
+                    b.HasOne("Historico", "Historico")
+                        .WithMany("Consultas")
+                        .HasForeignKey("HistoricoId");
+
+                    b.HasOne("serviçohospital.Models.Paciente", "Paciente")
+                        .WithMany("Consultas")
+                        .HasForeignKey("PacienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("serviçohospital.Models.ProfissionalSaude", "Profissional")
+                        .WithMany("Consultas")
+                        .HasForeignKey("ProfissionalSaudeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Historico");
+
+                    b.Navigation("Paciente");
+
+                    b.Navigation("Profissional");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.Seguranca", b =>
@@ -299,6 +379,18 @@ namespace serviçohospital.Migrations
                     b.Navigation("Paciente");
 
                     b.Navigation("ProfissionalSaude");
+                });
+
+            modelBuilder.Entity("Historico", b =>
+                {
+                    b.Navigation("Consultas");
+
+                    b.Navigation("Prescricoes");
+                });
+
+            modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
+                {
+                    b.Navigation("Prescricoes");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.Paciente", b =>
