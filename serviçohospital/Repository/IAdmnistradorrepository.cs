@@ -2,28 +2,24 @@
 
 namespace serviçohospital.Repository
 {
-    public interface IAdmnistradorrepository
+    public interface IAdministradorRepository
     {
-        // gestão de profissionais
+        // Gestão de Profissionais de Saúde
 
         Task<ProfissionalSaude> CriarProfissionalAsync(ProfissionalSaude profissionalSaude);
-        Task<ProfissionalSaude> EditarProfissionaisAsync(ProfissionalSaude profissional);
-        Task<bool> DesativarProfissional(int id);
+        Task<ProfissionalSaude> EditarProfissionalAsync(ProfissionalSaude profissional);
+        Task<bool> DesativarProfissionalAsync(int id);
         Task<IEnumerable<ProfissionalSaude>> ListarProfissionaisAsync();
 
-        // gestão de pacientes
+        // Gestão de Pacientes
 
-        Task<Paciente> EditarPacinteAsync(Paciente paciente);
-        Task<bool> DesativarPaciente(int id);
-        Task<IEnumerable<Paciente>> ListarPacienteAsync();
+        Task<Paciente> EditarPacienteAsync(Paciente paciente);
+        Task<bool> DesativarPacienteAsync(int id);
+        Task<IEnumerable<Paciente>> ListarPacientesAsync();
 
-        // consultas gerais
+        // Gestão de Consultas
+
         Task<IEnumerable<Consulta>> ListarConsultasAsync();
-        Task<bool> CancelarConsultas(int consultaid);
-
-        //segurança e controle
-
-        Task<bool> ResetarSenhaUsuariosAsync(int usuarioId);
-        Task<bool> AtribuirPermissaoAsync(int usuarioId, string permissao);
+        Task<bool> CancelarConsultaAsync(int consultaId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using serviçohospital.Context;
 using serviçohospital.Models;
 using System.Collections.Generic;
@@ -38,6 +39,17 @@ namespace serviçohospital.Repository
             _context.Pacientes.Remove(paciente);
             await _context.SaveChangesAsync();
             return paciente;
+        }
+
+        public async Task<Consulta> CancelarConsultaAsync(int consultaId)
+        {
+            var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == consultaId);
+            consulta.Status = StatusConsulta.Cancelada;
+
+            if (consulta == null) return null;
+            await _context.SaveChangesAsync();
+            return consulta;
+
         }
 
         public async Task<IEnumerable<Paciente>> GetAllAsync()
