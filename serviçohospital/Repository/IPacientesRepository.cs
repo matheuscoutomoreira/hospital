@@ -14,6 +14,7 @@ namespace serviçohospital.Repository
         Task<Paciente> BuscarPorCpfAsync(string cpf);
         // criar consultas e ver hidtorico
         Task<Consulta> CriarConsultaAsync(Consulta consulta);
+        public Task<Consulta> CancelarConsultaAsync(int consultaId);
         Task<Historico> GetHistoricoAsync(int pacienteId);
 
 
