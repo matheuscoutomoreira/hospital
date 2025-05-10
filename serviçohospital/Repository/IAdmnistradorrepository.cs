@@ -8,13 +8,13 @@ namespace serviçohospital.Repository
 
         Task<ProfissionalSaude> CriarProfissionalAsync(ProfissionalSaude profissionalSaude);
         Task<ProfissionalSaude> EditarProfissionalAsync(ProfissionalSaude profissional);
-        Task<bool> DesativarProfissionalAsync(int id);
+        Task<ProfissionalSaude> DesativarProfissionalAsync(int id);
         Task<IEnumerable<ProfissionalSaude>> ListarProfissionaisAsync();
 
         // Gestão de Pacientes
 
         Task<Paciente> EditarPacienteAsync(Paciente paciente);
-        Task<bool> DesativarPacienteAsync(int id);
+        Task<ProfissionalSaude> DesativarPacienteAsync(int id);
         Task<IEnumerable<Paciente>> ListarPacientesAsync();
 
         // Gestão de Consultas

@@ -1,4 +1,5 @@
 ﻿using serviçohospital.Models;
+using System.Text.Json.Serialization;
 
 public class Historico
 {
@@ -16,6 +17,7 @@ public class Historico
     public string Observacoes { get; set; }
 
     // Relacionamento com prescrições
+    [JsonIgnore]
     public virtual ICollection<Prescricao> Prescricoes { get; set; } = new List<Prescricao>();
 
     // Relacionamento com consultas (se quiser incluir no histórico)

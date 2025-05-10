@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace serviçohospital.Models
 {
@@ -31,7 +32,7 @@ namespace serviçohospital.Models
         public StatusConsulta Status { get; set; }
 
         public string? Prontuario { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<Prescricao> Prescricoes { get; set; } = new List<Prescricao>();
     }
 }

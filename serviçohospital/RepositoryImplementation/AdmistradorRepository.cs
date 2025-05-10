@@ -14,6 +14,7 @@ namespace serviçohospital.RepositoryImplementation
             _context = context;
         }
         
+
         public async Task<bool> CancelarConsultaAsync(int consultaId)
         {
            var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == consultaId);
@@ -33,9 +34,14 @@ namespace serviçohospital.RepositoryImplementation
 
         }
 
-        public Task<bool> DesativarPacienteAsync(int id)
+
+
+        public async Task<Paciente> DesativarPacienteAsync(int id)
         {
-            throw new NotImplementedException();
+            var consulta = _context.Pacientes.Find(id);
+            if (consulta == null) return null;
+          _context.Pacientes.Remove(consulta);
+            return consulta;
         }
 
         public Task<ProfissionalSaude> DesativarProfissionalAsync(int idh)
@@ -94,24 +100,32 @@ namespace serviçohospital.RepositoryImplementation
             return profissional;
         }
 
-        public Task<IEnumerable<Consulta>> ListarConsultasAsync()
+        public async Task<IEnumerable<Consulta>> ListarConsultasAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Consultas.ToListAsync();
         }
 
-        public Task<IEnumerable<Paciente>> ListarPacientesAsync()
+        public async Task<IEnumerable<Paciente>> ListarPacientesAsync()
         {
-            throw new NotImplementedException();
+
+           return await _context.Pacientes.ToListAsync();
+
         }
 
-        public Task<IEnumerable<ProfissionalSaude>> ListarProfissionaisAsync()
+        public async Task<IEnumerable<ProfissionalSaude>> ListarProfissionaisAsync()
         {
-            throw new NotImplementedException();
+
+            return await _context.Profissionais.ToListAsync();
+
         }
 
-        Task<bool> IAdministradorRepository.DesativarProfissionalAsync(int id)
+        Task<ProfissionalSaude> IAdministradorRepository.DesativarPacienteAsync(int id)
         {
-            throw new NotImplementedException();
+            var Consulta = _context.Profissionais.FirstOrDefaultAsync(x => x.Id == id);
+            if (Consulta == null) return null;
+            _context.Remove(Consulta);
+            _context.SaveChangesAsync();
+            return Consulta;
         }
     }
 }

@@ -67,11 +67,10 @@ namespace serviçohospital.Repository
             return await _context.Pacientes.FirstOrDefaultAsync(p => p.CPF == cpf);
         }
 
-        public async Task<IEnumerable<Paciente>> BuscarPorNomeAsync(string nome)
-        {
-            return await _context.Pacientes
-                .Where(p => p.Nome.Contains(nome))
-                .ToListAsync();
+        public async Task<Paciente> BuscarPorNomeAsync(string nome)
+        {if (nome is null) throw new ArgumentNullException(nameof(nome));
+            return await _context.Pacientes.FirstOrDefaultAsync(x => x.Nome == nome);
+              
         }
 
         public async Task<Consulta> CriarConsultaAsync(Consulta consulta)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace serviçohospital.Models;
 
@@ -18,6 +19,6 @@ public class Paciente
     [MaxLength(15)]
     public string? Telefone { get; set; }
     // relacionamento com consulta (1/n)
-
+    [JsonIgnore]
     public List<Consulta> Consultas { get; set; } = new List<Consulta>();
 }
