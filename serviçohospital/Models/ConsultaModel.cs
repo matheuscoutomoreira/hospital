@@ -22,17 +22,23 @@ namespace serviçohospital.Models
         public int ProfissionalSaudeId { get; set; }
         public virtual ProfissionalSaude Profissional { get; set; }
 
-        public int? HistoricoId { get; set; }  // Pode ser opcional
-        public virtual Historico Historico { get; set; }
-
         [Required]
-        public DateTime DataHora { get; set; } = DateTime.Now;
+        public DateTime DataHora { get; set; }
 
         [Required]
         public StatusConsulta Status { get; set; }
 
+        // Detalhes da consulta
+        public string TipoConsulta { get; set; }
+        public string Observacoes { get; set; }
+
         public string? Prontuario { get; set; }
+
+        // Relacionamento com prescrições
         [JsonIgnore]
         public virtual ICollection<Prescricao> Prescricoes { get; set; } = new List<Prescricao>();
     }
+
+
+
 }

@@ -21,4 +21,7 @@ public class Paciente
     // relacionamento com consulta (1/n)
     [JsonIgnore]
     public List<Consulta> Consultas { get; set; } = new List<Consulta>();
+    // Relacionamento com histórico (1:1)
+    [JsonIgnore]
+    public virtual Historico? Historico { get; set; }  // <-- Adicione isto
 }

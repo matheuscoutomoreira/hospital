@@ -19,34 +19,37 @@ namespace serviçohospital.Repository
 
         public async Task<Paciente> CreateAsync(Paciente paciente)
         {
+            if (paciente == null) throw new ArgumentNullException(nameof(paciente));
             _context.Pacientes.Add(paciente);
             await _context.SaveChangesAsync();
+            await CriarHistoricoAsync(paciente.Id);
             return paciente;
+
         }
 
         public async Task<Paciente> UpdateAsync(Paciente paciente)
         {
-            _context.Pacientes.Update(paciente);
             await _context.SaveChangesAsync();
             return paciente;
         }
 
         public async Task<Paciente> DeleteAsync(int id)
         {
-            var paciente = await _context.Pacientes.FindAsync(id);
+            var paciente = await _context.Pacientes.FirstOrDefaultAsync(x => x.Id == id); // Usando a versão assíncrona
             if (paciente == null) return null;
 
             _context.Pacientes.Remove(paciente);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Garantindo que a operação seja aguardada
             return paciente;
         }
 
         public async Task<Consulta> CancelarConsultaAsync(int consultaId)
         {
             var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == consultaId);
+            if (consulta == null) return null;
             consulta.Status = StatusConsulta.Cancelada;
 
-            if (consulta == null) return null;
+           
             await _context.SaveChangesAsync();
             return consulta;
 
@@ -86,6 +89,23 @@ namespace serviçohospital.Repository
                 .Include(h => h.Consultas)
                     .ThenInclude(c => c.Prescricoes)
                 .FirstOrDefaultAsync(h => h.PacienteId == pacienteId);
+        }
+
+        public async Task<Historico> CriarHistoricoAsync(int pacienteId)
+        {
+
+
+            
+            var historico = new Historico
+            {
+                PacienteId = pacienteId,
+                Data = DateTime.Now,
+            };
+
+            await _context.Historicos.AddAsync(historico);
+            await _context.SaveChangesAsync();
+
+            return historico;
         }
     }
 }

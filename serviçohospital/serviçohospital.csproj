@@ -13,11 +13,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

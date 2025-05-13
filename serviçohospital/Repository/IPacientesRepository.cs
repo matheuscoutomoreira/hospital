@@ -17,6 +17,7 @@ namespace serviçohospital.Repository
         public Task<Consulta> CancelarConsultaAsync(int consultaId);
         Task<Historico> GetHistoricoAsync(int pacienteId);
 
-
+        Task<Historico> CriarHistoricoAsync(int pacienteId); // Novo método para criar histórico
+        
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace serviçohospital.Migrations
 {
     /// <inheritdoc />
-    public partial class migração10 : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace serviçohospital.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "administracaos",
+                name: "Administracoes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -28,7 +28,7 @@ namespace serviçohospital.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_administracaos", x => x.Id);
+                    table.PrimaryKey("PK_Administracoes", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -78,14 +78,7 @@ namespace serviçohospital.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PacienteId = table.Column<int>(type: "int", nullable: false),
-                    ProfissionalSaudeId = table.Column<int>(type: "int", nullable: false),
-                    Data = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Descricao = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    TipoEvento = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Observacoes = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Data = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,17 +89,11 @@ namespace serviçohospital.Migrations
                         principalTable: "Pacientes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Historicos_Profissionais_ProfissionalSaudeId",
-                        column: x => x.ProfissionalSaudeId,
-                        principalTable: "Profissionais",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "usuarios",
+                name: "Usuarios",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -124,21 +111,21 @@ namespace serviçohospital.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_usuarios", x => x.Id);
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_usuarios_Pacientes_PacienteId",
+                        name: "FK_Usuarios_Administracoes_AdministracaoId",
+                        column: x => x.AdministracaoId,
+                        principalTable: "Administracoes",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Usuarios_Pacientes_PacienteId",
                         column: x => x.PacienteId,
                         principalTable: "Pacientes",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_usuarios_Profissionais_ProfissionalSaudeId",
+                        name: "FK_Usuarios_Profissionais_ProfissionalSaudeId",
                         column: x => x.ProfissionalSaudeId,
                         principalTable: "Profissionais",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_usuarios_administracaos_AdministracaoId",
-                        column: x => x.AdministracaoId,
-                        principalTable: "administracaos",
                         principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -151,11 +138,15 @@ namespace serviçohospital.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PacienteId = table.Column<int>(type: "int", nullable: false),
                     ProfissionalSaudeId = table.Column<int>(type: "int", nullable: false),
-                    HistoricoId = table.Column<int>(type: "int", nullable: true),
                     DataHora = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    TipoConsulta = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Observacoes = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Prontuario = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    HistoricoId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -181,7 +172,7 @@ namespace serviçohospital.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "seguranca",
+                name: "Segurancas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -193,11 +184,11 @@ namespace serviçohospital.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_seguranca", x => x.Id);
+                    table.PrimaryKey("PK_Segurancas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_seguranca_usuarios_UsuarioId",
+                        name: "FK_Segurancas_Usuarios_UsuarioId",
                         column: x => x.UsuarioId,
-                        principalTable: "usuarios",
+                        principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -253,12 +244,8 @@ namespace serviçohospital.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Historicos_PacienteId",
                 table: "Historicos",
-                column: "PacienteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Historicos_ProfissionalSaudeId",
-                table: "Historicos",
-                column: "ProfissionalSaudeId");
+                column: "PacienteId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Prescricoes_ConsultaID",
@@ -271,23 +258,23 @@ namespace serviçohospital.Migrations
                 column: "HistoricoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_seguranca_UsuarioId",
-                table: "seguranca",
+                name: "IX_Segurancas_UsuarioId",
+                table: "Segurancas",
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_usuarios_AdministracaoId",
-                table: "usuarios",
+                name: "IX_Usuarios_AdministracaoId",
+                table: "Usuarios",
                 column: "AdministracaoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_usuarios_PacienteId",
-                table: "usuarios",
+                name: "IX_Usuarios_PacienteId",
+                table: "Usuarios",
                 column: "PacienteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_usuarios_ProfissionalSaudeId",
-                table: "usuarios",
+                name: "IX_Usuarios_ProfissionalSaudeId",
+                table: "Usuarios",
                 column: "ProfissionalSaudeId");
         }
 
@@ -298,25 +285,25 @@ namespace serviçohospital.Migrations
                 name: "Prescricoes");
 
             migrationBuilder.DropTable(
-                name: "seguranca");
+                name: "Segurancas");
 
             migrationBuilder.DropTable(
                 name: "Consultas");
 
             migrationBuilder.DropTable(
-                name: "usuarios");
+                name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Historicos");
 
             migrationBuilder.DropTable(
-                name: "administracaos");
-
-            migrationBuilder.DropTable(
-                name: "Pacientes");
+                name: "Administracoes");
 
             migrationBuilder.DropTable(
                 name: "Profissionais");
+
+            migrationBuilder.DropTable(
+                name: "Pacientes");
         }
     }
 }

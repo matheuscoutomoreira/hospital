@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using serviçohospital.Context;
 using serviçohospital.Models;
 using serviçohospital.Repository;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
 
 namespace serviçohospital.Controllers;
@@ -17,7 +19,9 @@ public class PacienteController : ControllerBase
         _repository = repository;
     }
 
-    [HttpGet("id")]
+
+    //pega o apciente pelo id
+    [HttpGet("getPacienteId")]
     public async Task<ActionResult<Paciente>> GetPacienteId(int id)
     {
         var paciente = await _repository.GetByIdAsync(id);
@@ -28,7 +32,9 @@ public class PacienteController : ControllerBase
         return Ok(paciente);
     }
 
-    [HttpGet("nome")]
+
+    //pega o paciente pelo nome
+    [HttpGet("GetPacienteNome")]
     public async Task<ActionResult<Paciente>> GetPacienteNome(string nome)
     {
         var paciente = await _repository.BuscarPorNomeAsync(nome);
@@ -39,20 +45,36 @@ public class PacienteController : ControllerBase
         return Ok(paciente);
     }
 
-    [HttpPost]
+    //cria o paciente
+    [HttpPost("CriaPaciente")]
+
     public async Task<ActionResult<Paciente>> PostPaciente(Paciente paciente)
     {
-        if (paciente == null) { return BadRequest("Paciente não pode ser nulo."); }
+        if (paciente == null)
+            return BadRequest("Paciente não pode ser nulo.");
+
+        // Cria um histórico vazio vinculado ao paciente
+        paciente.Historico = new Historico
+        {
+            Data = DateTime.Now,
+            PacienteId = paciente.Id // será atribuído automaticamente pelo EF
+        };
 
         await _repository.CreateAsync(paciente);
 
         return CreatedAtAction(nameof(GetPacienteId), new { id = paciente.Id }, paciente);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Paciente>> UpdatePaciente(int id, Paciente paciente)
-    {
 
+
+
+    [HttpPut("{id}/Atualizapaciente")]
+    public async Task<ActionResult<Paciente>> UpdatePaciente(int id, [FromBody] Paciente paciente)
+    {
+        if (paciente == null)
+        {
+            return BadRequest("Paciente não pode ser nulo.");
+        }
 
         var pacienteExistente = await _repository.GetByIdAsync(id);
         if (pacienteExistente == null)
@@ -60,27 +82,57 @@ public class PacienteController : ControllerBase
             return NotFound("Paciente não encontrado.");
         }
 
-        // Atualize as propriedades que você quer modificar
+        // Atualiza as propriedades do paciente
         pacienteExistente.Nome = paciente.Nome;
         pacienteExistente.CPF = paciente.CPF;
         pacienteExistente.DataNascimento = paciente.DataNascimento;
         pacienteExistente.Telefone = paciente.Telefone;
 
-        // Agora, você chama o repositório para salvar as mudanças
+        // Atualiza no repositório
         await _repository.UpdateAsync(pacienteExistente);
 
-        return NoContent(); // Retorna um status 204 sem conteúdo, indicando que a atualização foi bem-sucedida.
+        // Retorna o status 204 (NoContent) indicando sucesso
+        return NoContent();
     }
-    [HttpDelete]
+
+    [HttpDelete("{id}/ApagaPaciente")]
     public async Task<ActionResult<Paciente>> Delete(int id)
     {
         if (id == 0)
         {
             return NotFound();
         }
+        var PacienteExistente =  await _repository.GetByIdAsync(id);
+        if (PacienteExistente is null) return NotFound("cliente não encontrado");
+
 
         await _repository.DeleteAsync(id);
         return Ok();
 
+    }
+
+    [HttpPatch("CancelaConsulta")]
+    public async Task<ActionResult<Consulta>> CancelarConsulta(int id)
+    {if (id == 0) return NotFound("a consulta não existe");
+        var consulta = await _repository.GetByIdAsync(id);
+        return Ok(consulta);
+    }
+
+    [HttpPost("criarconsulta")]
+    public async Task<ActionResult<Consulta>> criarConsulta(CriarConsultaDTO dto)
+    {
+       var paciente = await _repository.GetByIdAsync(dto.PacienteId);
+        if (paciente == null) return NotFound("paciente não encontrado");
+
+        var profissional = await _repository.GetByIdAsync(dto.ProfissionalSaudeId);
+        if (profissional == null) return NotFound("profissional não encontrado");
+        var novaConsulta = new Consulta {
+        DataHora = dto.DataConsulta,
+        PacienteId = dto.PacienteId,
+        ProfissionalSaudeId = dto.ProfissionalSaudeId,
+        Observacoes = dto.Observacoes}
+        ;
+        _repository.CriarConsultaAsync(novaConsulta);
+        return CreatedAtAction(nameof(criarConsulta), new { id = novaConsulta.Id }, novaConsulta);
     }
 }

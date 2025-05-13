@@ -33,29 +33,13 @@ namespace serviçohospital.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Observacoes")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<int>("PacienteId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProfissionalSaudeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TipoEvento")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PacienteId");
-
-                    b.HasIndex("ProfissionalSaudeId");
+                    b.HasIndex("PacienteId")
+                        .IsUnique();
 
                     b.ToTable("Historicos");
                 });
@@ -114,7 +98,7 @@ namespace serviçohospital.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("administracaos");
+                    b.ToTable("Administracoes");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
@@ -131,6 +115,10 @@ namespace serviçohospital.Migrations
                     b.Property<int?>("HistoricoId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Observacoes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("PacienteId")
                         .HasColumnType("int");
 
@@ -142,6 +130,10 @@ namespace serviçohospital.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("TipoConsulta")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -235,7 +227,7 @@ namespace serviçohospital.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("seguranca");
+                    b.ToTable("Segurancas");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.Usuario", b =>
@@ -280,26 +272,18 @@ namespace serviçohospital.Migrations
 
                     b.HasIndex("ProfissionalSaudeId");
 
-                    b.ToTable("usuarios");
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Historico", b =>
                 {
                     b.HasOne("serviçohospital.Models.Paciente", "Paciente")
-                        .WithMany()
-                        .HasForeignKey("PacienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("serviçohospital.Models.ProfissionalSaude", "ProfissionalSaude")
-                        .WithMany()
-                        .HasForeignKey("ProfissionalSaudeId")
+                        .WithOne("Historico")
+                        .HasForeignKey("Historico", "PacienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Paciente");
-
-                    b.Navigation("ProfissionalSaude");
                 });
 
             modelBuilder.Entity("Prescricao", b =>
@@ -311,7 +295,7 @@ namespace serviçohospital.Migrations
                         .IsRequired();
 
                     b.HasOne("Historico", "Historico")
-                        .WithMany("Prescricoes")
+                        .WithMany()
                         .HasForeignKey("HistoricoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -323,7 +307,7 @@ namespace serviçohospital.Migrations
 
             modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
                 {
-                    b.HasOne("Historico", "Historico")
+                    b.HasOne("Historico", null)
                         .WithMany("Consultas")
                         .HasForeignKey("HistoricoId");
 
@@ -338,8 +322,6 @@ namespace serviçohospital.Migrations
                         .HasForeignKey("ProfissionalSaudeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Historico");
 
                     b.Navigation("Paciente");
 
@@ -381,8 +363,6 @@ namespace serviçohospital.Migrations
             modelBuilder.Entity("Historico", b =>
                 {
                     b.Navigation("Consultas");
-
-                    b.Navigation("Prescricoes");
                 });
 
             modelBuilder.Entity("serviçohospital.Models.Consulta", b =>
@@ -393,6 +373,9 @@ namespace serviçohospital.Migrations
             modelBuilder.Entity("serviçohospital.Models.Paciente", b =>
                 {
                     b.Navigation("Consultas");
+
+                    b.Navigation("Historico")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("serviçohospital.Models.ProfissionalSaude", b =>
