@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using serviçohospital.Context;
 using serviçohospital.Repository;
+using serviçohospital.RepositoryImplementation;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddScoped<IPacientesRepository, PacientesRepository>();
+builder.Services.AddScoped<IProfissionalDesaudeRepository, ProfissionalDeSaudeRepository>();
 
 var Mysqlconnection = builder.Configuration.GetConnectionString("DefaultConnection");
 

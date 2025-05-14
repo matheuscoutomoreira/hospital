@@ -18,7 +18,7 @@ namespace serviçohospital.RepositoryImplementation
 
       
 
-        public async Task<ProfissionalSaude> Cretaasync(ProfissionalSaude profissional)
+        public async Task<ProfissionalSaude> Createasync(ProfissionalSaude profissional)
         {
            _context.Profissionais.AddAsync(profissional);
             await _context.SaveChangesAsync();
@@ -58,7 +58,8 @@ namespace serviçohospital.RepositoryImplementation
 
         public async Task<ProfissionalSaude> GetByIdAsync(int id)
         {
-            return await _context.Profissionais.FindAsync(id);
+            var s = await _context.Profissionais.FirstOrDefaultAsync(x=>x.Id == id);
+            return s;
         }
 
       

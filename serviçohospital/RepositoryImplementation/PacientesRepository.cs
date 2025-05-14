@@ -94,7 +94,6 @@ namespace serviçohospital.Repository
         public async Task<Historico> CriarHistoricoAsync(int pacienteId)
         {
 
-
             
             var historico = new Historico
             {

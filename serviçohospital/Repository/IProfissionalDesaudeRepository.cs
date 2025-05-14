@@ -6,7 +6,7 @@ namespace serviçohospital.Repository
     {
 
         /// crud basico
-        Task<ProfissionalSaude> Cretaasync(ProfissionalSaude profissional);
+        Task<ProfissionalSaude> Createasync(ProfissionalSaude profissional);
         Task<ProfissionalSaude> UpdateAsync(ProfissionalSaude profissional);
         Task<ProfissionalSaude> DeleteAsync(int id);
          Task<ProfissionalSaude>GetByIdAsync(int id);

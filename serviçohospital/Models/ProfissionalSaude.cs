@@ -10,11 +10,11 @@ public class ProfissionalSaude
 
     [Required]
     [MaxLength(100)]
-    public string? Nome { get; set; }
+    public string Nome { get; set; }
 
     [Required]
     [MaxLength(10)]
-    public string? CRM { get;set; }
+    public string CRM { get;set; }
 
     [Required]
     [MaxLength(50)]

@@ -50,8 +50,7 @@ public class PacienteController : ControllerBase
 
     public async Task<ActionResult<Paciente>> PostPaciente(Paciente paciente)
     {
-        if (paciente == null)
-            return BadRequest("Paciente não pode ser nulo.");
+        if (paciente is null)return BadRequest("Paciente não pode ser nulo.");
 
         // Cria um histórico vazio vinculado ao paciente
         paciente.Historico = new Historico
@@ -132,7 +131,19 @@ public class PacienteController : ControllerBase
         ProfissionalSaudeId = dto.ProfissionalSaudeId,
         Observacoes = dto.Observacoes}
         ;
-        _repository.CriarConsultaAsync(novaConsulta);
+         await _repository.CriarConsultaAsync(novaConsulta);
         return CreatedAtAction(nameof(criarConsulta), new { id = novaConsulta.Id }, novaConsulta);
+    }
+
+    [HttpGet("getHistorico")]
+    public async Task<ActionResult<Historico>> GetHistorico(int id)
+    {
+       var paciente =  await _repository.GetByIdAsync(id);
+
+        if (paciente == null) return NotFound("pacinete não existe");
+
+       await _repository.GetHistoricoAsync(id);
+        return Ok();
+
     }
 }
