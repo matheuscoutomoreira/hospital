@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace serviçohospital.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class Migrations1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -140,8 +140,6 @@ namespace serviçohospital.Migrations
                     ProfissionalSaudeId = table.Column<int>(type: "int", nullable: false),
                     DataHora = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    TipoConsulta = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Observacoes = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Prontuario = table.Column<string>(type: "longtext", nullable: true)
@@ -205,8 +203,7 @@ namespace serviçohospital.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Dosagem = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DataPrescricao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    HistoricoId = table.Column<int>(type: "int", nullable: false)
+                    DataPrescricao = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -215,12 +212,6 @@ namespace serviçohospital.Migrations
                         name: "FK_Prescricoes_Consultas_ConsultaID",
                         column: x => x.ConsultaID,
                         principalTable: "Consultas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Prescricoes_Historicos_HistoricoId",
-                        column: x => x.HistoricoId,
-                        principalTable: "Historicos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -251,11 +242,6 @@ namespace serviçohospital.Migrations
                 name: "IX_Prescricoes_ConsultaID",
                 table: "Prescricoes",
                 column: "ConsultaID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Prescricoes_HistoricoId",
-                table: "Prescricoes",
-                column: "HistoricoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Segurancas_UsuarioId",

@@ -7,7 +7,7 @@ namespace serviçohospital.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProfissionalSaudeController:ControllerBase
+    public class ProfissionalSaudeController : ControllerBase
     {
         private readonly IProfissionalDesaudeRepository _profissionalRepository;
 
@@ -19,9 +19,9 @@ namespace serviçohospital.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<ProfissionalSaude>> CreateProfissional([FromBody]ProfissionalSaude profissional)
+        public async Task<ActionResult<ProfissionalSaude>> CreateProfissional([FromBody] ProfissionalSaude profissional)
         {
-            if (profissional == null) return BadRequest("dados invalidos");
+            if (profissional is null) return BadRequest("dados invalidos");
 
             await _profissionalRepository.Createasync(profissional);
             return Ok(profissional);
@@ -35,9 +35,9 @@ namespace serviçohospital.Controllers
 
             if (consulta is null) return NotFound("profissional não existe");
 
-          
+
             await _profissionalRepository.DeleteAsync(id);
-            return Ok(consulta+" foi apagado");
+            return Ok(consulta + " foi apagado");
         }
 
         [HttpGet]
@@ -46,6 +46,42 @@ namespace serviçohospital.Controllers
             var consulta = await _profissionalRepository.GetByIdAsync(id);
             if (consulta is null) return NotFound("profissional não encontrado");
             return Ok(consulta);
+        }
+
+        [HttpGet("obterhistoricopaci")]
+
+
+        public async Task<ActionResult<Historico>> ObterhistoricoPaciente(int id)
+        {
+             var historico = await _profissionalRepository.ObterHistoricoPaciente(id);
+
+            if (historico is null) return NotFound("historico vazio");
+
+            return Ok(historico);
+        }
+
+
+        [HttpGet("obteragenda")]
+        public async Task<ActionResult<Consulta>> ObterAgenda(int profissionalId)
+        {
+            var agenda = await _profissionalRepository.ObterAgenda(profissionalId);
+            if (agenda is null) return NotFound("agenda esta vazia");
+
+            return Ok(agenda);
+        }
+
+        [HttpPost("emitirprescricao")]
+        public async Task<ActionResult<Prescricao>> EmitirPrescricao(int consulta,string medicamento,string dosagem)
+        {
+            _profissionalRepository.EmitirPrescricao(consulta,medicamento,dosagem);
+            return Ok("criado com sucesso");
+        }
+
+        [HttpPut("finalizar consulta")]
+        public  async Task<ActionResult<Consulta>> FinalizarConsulta(int consultaid, string prontuario)
+        {
+             _profissionalRepository.FinalizarConsulta(consultaid, prontuario);
+            return Ok();
         }
 
         [HttpPut]
@@ -67,7 +103,7 @@ namespace serviçohospital.Controllers
             profissionalExistente.Nome = profissionalSaude.Nome;
             profissionalExistente.CRM = profissionalSaude.CRM;
             profissionalExistente.Especialidade = profissionalSaude.Especialidade;
-           
+
 
             // Atualiza no repositório
             await _profissionalRepository.UpdateAsync(profissionalExistente);
@@ -75,5 +111,7 @@ namespace serviçohospital.Controllers
             // Retorna o status 204 (NoContent) indicando sucesso
             return Ok();
         }
+       
     }
+    
 }

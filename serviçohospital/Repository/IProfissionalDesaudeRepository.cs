@@ -10,7 +10,13 @@ namespace serviçohospital.Repository
         Task<ProfissionalSaude> UpdateAsync(ProfissionalSaude profissional);
         Task<ProfissionalSaude> DeleteAsync(int id);
          Task<ProfissionalSaude>GetByIdAsync(int id);
-        Task<IEnumerable<ProfissionalSaude>> GetAllAsync();
+        Task< List<Consulta>> ObterAgenda(int profissionalId);
+         void FinalizarConsulta(int consultaId, string prontuario);
+        void EmitirPrescricao(int consultaId, string medicamento, string dosagem);
+         Task<List<Consulta>> ObterHistoricoPaciente(int pacienteId);
+
+
+       
 
         //atualiza o proprio cadastro
 

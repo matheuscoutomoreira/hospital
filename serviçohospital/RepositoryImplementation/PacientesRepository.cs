@@ -78,10 +78,26 @@ namespace serviçohospital.Repository
 
         public async Task<Consulta> CriarConsultaAsync(Consulta consulta)
         {
+            // Tenta buscar histórico do paciente
+            var historico = await _context.Historicos
+                .FirstOrDefaultAsync(h => h.PacienteId == consulta.PacienteId);
+
+            // Se não existir, cria um novo histórico
+            if (historico == null)
+            {
+                historico = await CriarHistoricoAsync(consulta.PacienteId);
+            }
+
+            // Associa a consulta ao histórico
+            consulta.HistoricoId = historico.Id;
+
+            // Agora adiciona a consulta
             _context.Consultas.Add(consulta);
             await _context.SaveChangesAsync();
+
             return consulta;
         }
+
 
         public async Task<Historico> GetHistoricoAsync(int pacienteId)
         {

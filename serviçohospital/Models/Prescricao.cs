@@ -22,8 +22,5 @@ public class Prescricao
 
     public DateTime DataPrescricao { get; set; } = DateTime.UtcNow;
 
-    // Relacionamento com Histórico (caso necessário)
-    public int HistoricoId { get; set; }
-    [ForeignKey("HistoricoId")]
-    public virtual Historico Historico { get; set; }
+   
 }

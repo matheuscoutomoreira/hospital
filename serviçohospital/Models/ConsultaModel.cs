@@ -28,16 +28,18 @@ namespace serviçohospital.Models
         [Required]
         public StatusConsulta Status { get; set; }
 
-        // Detalhes da consulta
-        public string TipoConsulta { get; set; }
         public string Observacoes { get; set; }
-
         public string? Prontuario { get; set; }
 
-        // Relacionamento com prescrições
+        // Novo relacionamento com Historico
+        public int? HistoricoId { get; set; }
+        [ForeignKey("HistoricoId")]
+        public virtual Historico Historico { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<Prescricao> Prescricoes { get; set; } = new List<Prescricao>();
     }
+
 
 
 

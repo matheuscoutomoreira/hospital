@@ -13,10 +13,12 @@ namespace serviçohospital.Controllers;
 public class PacienteController : ControllerBase
 {
     private readonly IPacientesRepository _repository;
+    private readonly IProfissionalDesaudeRepository _profissionalDesaudeRepository;
 
-    public PacienteController(IPacientesRepository repository)
+    public PacienteController(IPacientesRepository repository,IProfissionalDesaudeRepository profissionalDesaudeRepository)
     {
         _repository = repository;
+        _profissionalDesaudeRepository = profissionalDesaudeRepository;
     }
 
 
@@ -112,8 +114,11 @@ public class PacienteController : ControllerBase
 
     [HttpPatch("CancelaConsulta")]
     public async Task<ActionResult<Consulta>> CancelarConsulta(int id)
-    {if (id == 0) return NotFound("a consulta não existe");
+    {
         var consulta = await _repository.GetByIdAsync(id);
+        if (consulta == null) return BadRequest("consulta não existe");
+
+         await _repository.CancelarConsultaAsync(id);
         return Ok(consulta);
     }
 
@@ -121,15 +126,21 @@ public class PacienteController : ControllerBase
     public async Task<ActionResult<Consulta>> criarConsulta(CriarConsultaDTO dto)
     {
        var paciente = await _repository.GetByIdAsync(dto.PacienteId);
-        if (paciente == null) return NotFound("paciente não encontrado");
+        if (paciente is null) return NotFound("paciente não encontrado");
 
-        var profissional = await _repository.GetByIdAsync(dto.ProfissionalSaudeId);
-        if (profissional == null) return NotFound("profissional não encontrado");
-        var novaConsulta = new Consulta {
-        DataHora = dto.DataConsulta,
-        PacienteId = dto.PacienteId,
-        ProfissionalSaudeId = dto.ProfissionalSaudeId,
-        Observacoes = dto.Observacoes}
+        var profissional = await _profissionalDesaudeRepository.GetByIdAsync(dto.ProfissionalSaudeId);
+        Console.WriteLine(profissional);
+        if (profissional is null) return NotFound("profissional não encontrado");
+        var novaConsulta = new Consulta
+        {
+            DataHora = dto.DataConsulta,
+            PacienteId = dto.PacienteId,
+            ProfissionalSaudeId = dto.ProfissionalSaudeId,
+            Observacoes = dto.Observacoes,
+            Status = StatusConsulta.Agendado
+
+
+        }
         ;
          await _repository.CriarConsultaAsync(novaConsulta);
         return CreatedAtAction(nameof(criarConsulta), new { id = novaConsulta.Id }, novaConsulta);
@@ -142,8 +153,8 @@ public class PacienteController : ControllerBase
 
         if (paciente == null) return NotFound("pacinete não existe");
 
-       await _repository.GetHistoricoAsync(id);
-        return Ok();
+        var resultado = await _repository.GetHistoricoAsync(id);
+        return Ok(resultado);
 
     }
 }
