@@ -16,6 +16,7 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<IPacientesRepository, PacientesRepository>();
 builder.Services.AddScoped<IProfissionalDesaudeRepository, ProfissionalDeSaudeRepository>();
 
+
 var Mysqlconnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseMySql(Mysqlconnection, ServerVersion.AutoDetect(Mysqlconnection)));

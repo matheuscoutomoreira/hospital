@@ -6,13 +6,11 @@ namespace serviçohospital.Repository
     {
 
         /// crud basico
-        Task<ProfissionalSaude> Createasync(ProfissionalSaude profissional);
-        Task<ProfissionalSaude> UpdateAsync(ProfissionalSaude profissional);
-        Task<ProfissionalSaude> DeleteAsync(int id);
+        
          Task<ProfissionalSaude>GetByIdAsync(int id);
         Task< List<Consulta>> ObterAgenda(int profissionalId);
-         void FinalizarConsulta(int consultaId, string prontuario);
-        void EmitirPrescricao(int consultaId, string medicamento, string dosagem);
+         Task<Consulta> FinalizarConsulta(int consultaId, string prontuario);
+        Task<Prescricao> EmitirPrescricao(int consultaId, string medicamento, string dosagem);
          Task<List<Consulta>> ObterHistoricoPaciente(int pacienteId);
 
 
@@ -24,6 +22,6 @@ namespace serviçohospital.Repository
 
         // verifica se ja existe um crm ou cpf
         
-        Task<bool> ExisteregistroAsync(string registro);//CRM
+        
     }
 }

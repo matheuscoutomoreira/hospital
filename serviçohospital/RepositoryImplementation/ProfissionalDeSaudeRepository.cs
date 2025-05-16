@@ -18,38 +18,12 @@ namespace serviçohospital.RepositoryImplementation
 
       
 
-        public async Task<ProfissionalSaude> Createasync(ProfissionalSaude profissional)
-        {
-           _context.Profissionais.AddAsync(profissional);
-            await _context.SaveChangesAsync();
-            return profissional;
-        }
-
-        public async Task<ProfissionalSaude> UpdateAsync(ProfissionalSaude profissional)
-        {
-            _context.Profissionais.Update(profissional);
-            await _context.SaveChangesAsync();
-            return profissional;
-        }
-
-        public async Task<ProfissionalSaude> DeleteAsync(int id)
-        {
-           var profissional = _context.Profissionais.Find(id);
-            if (profissional == null) return null;
-             _context.Profissionais.Remove(profissional);
-            await _context.SaveChangesAsync();
-            return profissional;
-        }
+       
 
        
         
 
-        public async Task<bool> ExisteregistroAsync(string registro)
-        {
-            return await _context.Profissionais.AnyAsync( x => x.CRM == registro);
-           
-            
-        }
+       
 
         public async Task<IEnumerable<Paciente>> GetPacientesAllAsync()
         {
@@ -71,18 +45,24 @@ namespace serviçohospital.RepositoryImplementation
                 .ToListAsync();
         }
 
-        public void FinalizarConsulta(int consultaId, string prontuario)
+        public async Task<Consulta?> FinalizarConsulta(int consultaId, string prontuario)
         {
-            var consulta = _context.Consultas.Find(consultaId);
+            var consulta = await _context.Consultas.FindAsync(consultaId);
 
-            if (consulta != null) {
+            if (consulta != null)
+            {
                 consulta.Prontuario = prontuario;
                 consulta.Status = StatusConsulta.Feita;
-                _context.SaveChangesAsync();
+
+                await _context.SaveChangesAsync();
+                return consulta;
             }
+
+            return null; // retorno explícito se não encontrado
         }
 
-        public void EmitirPrescricao(int consultaId, string medicamento, string dosagem)
+
+        public async Task<Prescricao> EmitirPrescricao(int consultaId, string medicamento, string dosagem)
         {
             var prescrição = new Prescricao
             {
@@ -91,8 +71,9 @@ namespace serviçohospital.RepositoryImplementation
                 Dosagem = dosagem,
                 DataPrescricao = DateTime.Now
             };
-            _context.Prescricoes.Add(prescrição);
-            _context.SaveChangesAsync();
+              await _context.Prescricoes.AddAsync(prescrição);
+             await _context.SaveChangesAsync();
+            return prescrição;
         }
 
         public Task<List<Consulta>> ObterHistoricoPaciente(int pacienteId)
