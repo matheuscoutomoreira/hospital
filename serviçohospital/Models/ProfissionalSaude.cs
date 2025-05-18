@@ -13,7 +13,7 @@ public class ProfissionalSaude
     public string Nome { get; set; }
 
     [Required]
-    [MaxLength(10)]
+    [MaxLength(255)]
     public string CRM { get;set; }
 
     [Required]

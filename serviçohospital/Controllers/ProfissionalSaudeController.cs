@@ -18,9 +18,7 @@ namespace serviçohospital.Controllers
 
 
 
-       
-
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ProfissionalSaude>> GetProfissional(int id)
         {
             var consulta = await _profissionalRepository.GetByIdAsync(id);
@@ -28,10 +26,10 @@ namespace serviçohospital.Controllers
             return Ok(consulta);
         }
 
-        [HttpGet("obterhistoricopaci")]
+        [HttpGet("ObterHistoricoPaci/{id}")]
 
 
-        public async Task<ActionResult<Historico>> ObterhistoricoPaciente(int id)
+        public async Task<ActionResult<List<Historico>>> ObterhistoricoPaciente(int id)
         {
              var historico = await _profissionalRepository.ObterHistoricoPaciente(id);
 
@@ -41,8 +39,8 @@ namespace serviçohospital.Controllers
         }
 
 
-        [HttpGet("obteragenda")]
-        public async Task<ActionResult<Consulta>> ObterAgenda(int profissionalId)
+        [HttpGet("ObterAgenda/{id}")]
+        public async Task<ActionResult<List<Consulta>>> ObterAgenda(int profissionalId)
         {
             var agenda = await _profissionalRepository.ObterAgenda(profissionalId);
             if (agenda is null) return NotFound("agenda esta vazia");
@@ -50,14 +48,14 @@ namespace serviçohospital.Controllers
             return Ok(agenda);
         }
 
-        [HttpPost("emitirprescricao")]
+        [HttpPost("EmitirPrescricao")]
         public async Task<ActionResult<Prescricao>> EmitirPrescricao(int consulta,string medicamento,string dosagem)
         {
              await _profissionalRepository.EmitirPrescricao(consulta,medicamento,dosagem);
             return Ok("criado com sucesso");
         }
 
-        [HttpPut("finalizar consulta")]
+        [HttpPut("FinalizarConsulta")]
         public  async Task<ActionResult<Consulta>> FinalizarConsulta(int consultaid, string prontuario)
         {
             await _profissionalRepository.FinalizarConsulta(consultaid, prontuario);

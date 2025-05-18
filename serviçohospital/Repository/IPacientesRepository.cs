@@ -8,6 +8,7 @@ namespace serviçohospital.Repository
         Task<Paciente> UpdateAsync(Paciente paciente);
         Task<Paciente> DeleteAsync(int id);
         // pegar dados do paciente
+        Task<Consulta> GetConsultaByIdAsync( int id);
         Task<Paciente> GetByIdAsync(int id);
         Task<IEnumerable<Paciente>> GetAllAsync();
         Task<Paciente> BuscarPorNomeAsync(string nome);

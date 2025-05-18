@@ -13,48 +13,60 @@ namespace serviçohospital.RepositoryImplementation
         {
             _context = context;
         }
-        
 
-        public async Task<bool> CancelarConsultaAsync(int consultaId)
+        public async Task<Consulta> GetByIdAsync(int id)
         {
-           var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == consultaId);
-             consulta.Status  = StatusConsulta.Cancelada;
-
-            if(consulta == null) return false;
-             await _context.SaveChangesAsync();
-            return true;
-           
+            var res = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == id);
+            return res;
         }
 
+        // cabcela consultas
+        public async Task<Consulta> CancelarConsultaAsync(int consultaId)
+        {
+            var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.Id == consultaId);
+            if (consulta == null) return null;
+            consulta.Status = StatusConsulta.Cancelada;
+
+
+            await _context.SaveChangesAsync();
+            return consulta;
+
+        }
+
+        // criarprofissional
         public async Task<ProfissionalSaude> CriarProfissionalAsync(ProfissionalSaude profissionalSaude)
         {
-             _context.Profissionais.Add(profissionalSaude);
+            _context.Profissionais.Add(profissionalSaude);
             await _context.SaveChangesAsync();
+           
             return profissionalSaude;
 
         }
 
 
-
+        //desativar pacintes
         public async Task<Paciente> DesativarPacienteAsync(int id)
         {
-            var consulta = _context.Pacientes.Find(id);
+            var consulta =  await _context.Pacientes.FindAsync(id);
             if (consulta == null) return null;
-          _context.Pacientes.Remove(consulta);
+            _context.Pacientes.Remove(consulta);
+           await _context.SaveChangesAsync();
             return consulta;
         }
 
-        public Task<ProfissionalSaude> DesativarProfissionalAsync(int idh)
+        // desativar profissional
+
+        public async Task<ProfissionalSaude> DesativarProfissionalAsync(int idh)
         {
-          var Consulta =  _context.Profissionais.FirstOrDefaultAsync(x => x.Id == idh);
+            var Consulta = await  _context.Profissionais.FirstOrDefaultAsync(x => x.Id == idh);
             if (Consulta == null) return null;
-            _context.Remove(Consulta);
-            _context.SaveChangesAsync();
+            _context.Profissionais.Remove(Consulta);
+            await _context.SaveChangesAsync();
             return Consulta;
         }
 
-       
-          public async Task<Paciente> EditarPacienteAsync(Paciente paciente)
+
+        public async Task<Paciente> EditarPacienteAsync(Paciente paciente)
         {
             // 1. Buscar o paciente no banco de dados pelo ID
             var pacienteExistente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == paciente.Id);
@@ -74,9 +86,9 @@ namespace serviçohospital.RepositoryImplementation
 
             // Retornar o paciente atualizado (ou poderia retornar o pacienteExistente)
             return pacienteExistente;
-          }
- 
-        
+        }
+
+
 
         public async Task<ProfissionalSaude> EditarProfissionalAsync(ProfissionalSaude profissional)
         {
@@ -90,14 +102,21 @@ namespace serviçohospital.RepositoryImplementation
             // 3. Atualizar os dados do paciente
             profissional.Nome = profissional.Nome;
             profissional.Especialidade = profissional.Especialidade;
-            
-            
+
+
             await _context.SaveChangesAsync();
-            
+
             // 4. Salvar as alterações no banco de dados
 
             // Retornar o paciente atualizado (ou poderia retornar o pacienteExistente)
             return profissional;
+        }
+
+        public async Task<ProfissionalSaude> GetProfissional(int id)
+        {
+            var resposta = await _context.Profissionais.FirstOrDefaultAsync(x => x.Id == id);
+            if (resposta == null) return null;
+            return resposta;
         }
 
         public async Task<IEnumerable<Consulta>> ListarConsultasAsync()
@@ -108,7 +127,7 @@ namespace serviçohospital.RepositoryImplementation
         public async Task<IEnumerable<Paciente>> ListarPacientesAsync()
         {
 
-           return await _context.Pacientes.ToListAsync();
+            return await _context.Pacientes.ToListAsync();
 
         }
 
@@ -119,13 +138,6 @@ namespace serviçohospital.RepositoryImplementation
 
         }
 
-        Task<ProfissionalSaude> IAdministradorRepository.DesativarPacienteAsync(int id)
-        {
-            var Consulta = _context.Profissionais.FirstOrDefaultAsync(x => x.Id == id);
-            if (Consulta == null) return null;
-            _context.Remove(Consulta);
-            _context.SaveChangesAsync();
-            return Consulta;
-        }
+
     }
 }

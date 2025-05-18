@@ -122,5 +122,14 @@ namespace serviçohospital.Repository
 
             return historico;
         }
+
+        public async Task<Consulta> GetConsultaByIdAsync(int id)
+        {
+            return await _context.Consultas
+                .Include(c => c.Paciente)
+                .Include(c => c.Profissional)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
     }
 }

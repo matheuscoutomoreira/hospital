@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using serviçohospital.Context;
 using serviçohospital.Models;
 using serviçohospital.Repository;
-using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Threading.Tasks;
 
 namespace serviçohospital.Controllers;
@@ -15,122 +13,134 @@ public class PacienteController : ControllerBase
     private readonly IPacientesRepository _repository;
     private readonly IProfissionalDesaudeRepository _profissionalDesaudeRepository;
 
-    public PacienteController(IPacientesRepository repository,IProfissionalDesaudeRepository profissionalDesaudeRepository)
+    public PacienteController(IPacientesRepository repository, IProfissionalDesaudeRepository profissionalDesaudeRepository)
     {
         _repository = repository;
         _profissionalDesaudeRepository = profissionalDesaudeRepository;
     }
 
-
-    //pega o apciente pelo id
-    [HttpGet("getPacienteId")]
+    // GET: api/paciente/{id}
+    [HttpGet("GetPacienteId/{id}")]
     public async Task<ActionResult<Paciente>> GetPacienteId(int id)
     {
         var paciente = await _repository.GetByIdAsync(id);
-        if (paciente == null)
+        if (paciente == null) return NotFound();
+
+        try
         {
-            return NotFound($"Paciente com ID {id} não encontrado.");
+            if (!string.IsNullOrWhiteSpace(paciente.CPF))
+                paciente.CPF = CriptografiaHelper.Descriptografar(paciente.CPF);
+
+            if (!string.IsNullOrWhiteSpace(paciente.Telefone))
+                paciente.Telefone = CriptografiaHelper.Descriptografar(paciente.Telefone);
         }
+        catch
+        {
+            return BadRequest("Erro ao descriptografar os dados. Verifique se estão corretamente armazenados.");
+        }
+
         return Ok(paciente);
     }
 
-
-    //pega o paciente pelo nome
-    [HttpGet("GetPacienteNome")]
-    public async Task<ActionResult<Paciente>> GetPacienteNome(string nome)
+    // GET: api/paciente/por-nome/{nome}
+    [HttpGet("por-nome/{nome}")]
+    public async Task<ActionResult<Paciente>> GetPacientePorNome(string nome)
     {
         var paciente = await _repository.BuscarPorNomeAsync(nome);
         if (paciente == null)
-        {
             return NotFound($"Paciente com o nome {nome} não encontrado.");
-        }
         return Ok(paciente);
     }
 
-    //cria o paciente
+    // POST: api/paciente
     [HttpPost("CriaPaciente")]
-
-    public async Task<ActionResult<Paciente>> PostPaciente(Paciente paciente)
+    public async Task<ActionResult<Paciente>> PostPaciente([FromBody] Paciente paciente)
     {
-        if (paciente is null)return BadRequest("Paciente não pode ser nulo.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        // Cria um histórico vazio vinculado ao paciente
+        if (string.IsNullOrWhiteSpace(paciente.Nome) || paciente.Nome == "string")
+            return BadRequest("Nome é obrigatório e não pode ser 'string'.");
+
+        if (string.IsNullOrWhiteSpace(paciente.CPF) || paciente.CPF == "string")
+            return BadRequest("CPF é obrigatório e não pode ser 'string'.");
+
+        if (string.IsNullOrWhiteSpace(paciente.Telefone) || paciente.Telefone == "string")
+            return BadRequest("Telefone é obrigatório e não pode ser 'string'.");
+
+        paciente.CPF = CriptografiaHelper.Criptografar(paciente.CPF);
+        paciente.Telefone = CriptografiaHelper.Criptografar(paciente.Telefone);
+
         paciente.Historico = new Historico
         {
-            Data = DateTime.Now,
-            PacienteId = paciente.Id // será atribuído automaticamente pelo EF
+            Data = DateTime.Now
         };
 
         await _repository.CreateAsync(paciente);
 
+        // Evita retornar os dados criptografados na resposta
+        paciente.CPF = null;
+        paciente.Telefone = null;
+
         return CreatedAtAction(nameof(GetPacienteId), new { id = paciente.Id }, paciente);
     }
 
-
-
-
-    [HttpPut("{id}/Atualizapaciente")]
-    public async Task<ActionResult<Paciente>> UpdatePaciente(int id, [FromBody] Paciente paciente)
+    // PUT: api/paciente/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> AtualizarPaciente(int id, [FromBody] Paciente paciente)
     {
         if (paciente == null)
-        {
             return BadRequest("Paciente não pode ser nulo.");
-        }
 
-        var pacienteExistente = await _repository.GetByIdAsync(id);
-        if (pacienteExistente == null)
-        {
+        var existente = await _repository.GetByIdAsync(id);
+        if (existente == null)
             return NotFound("Paciente não encontrado.");
-        }
 
-        // Atualiza as propriedades do paciente
-        pacienteExistente.Nome = paciente.Nome;
-        pacienteExistente.CPF = paciente.CPF;
-        pacienteExistente.DataNascimento = paciente.DataNascimento;
-        pacienteExistente.Telefone = paciente.Telefone;
+        existente.Nome = paciente.Nome;
+        existente.CPF = CriptografiaHelper.Criptografar(paciente.CPF);
+        existente.DataNascimento = paciente.DataNascimento;
+        existente.Telefone = CriptografiaHelper.Criptografar(paciente.Telefone);
 
-        // Atualiza no repositório
-        await _repository.UpdateAsync(pacienteExistente);
-
-        // Retorna o status 204 (NoContent) indicando sucesso
+        await _repository.UpdateAsync(existente);
         return NoContent();
     }
 
-    [HttpDelete("{id}/ApagaPaciente")]
-    public async Task<ActionResult<Paciente>> Delete(int id)
+    // DELETE: api/paciente/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> ApagarPaciente(int id)
     {
-        if (id == 0)
-        {
-            return NotFound();
-        }
-        var PacienteExistente =  await _repository.GetByIdAsync(id);
-        if (PacienteExistente is null) return NotFound("cliente não encontrado");
-
+        var existente = await _repository.GetByIdAsync(id);
+        if (existente == null)
+            return NotFound("Paciente não encontrado.");
 
         await _repository.DeleteAsync(id);
         return Ok();
-
     }
 
-    [HttpPatch("CancelaConsulta")]
+    // PATCH: api/paciente/consulta/{id}/cancelar
+    [HttpPatch("consulta/{id}/cancelar")]
     public async Task<ActionResult<Consulta>> CancelarConsulta(int id)
     {
-        var consulta = await _repository.GetByIdAsync(id);
-        if (consulta == null) return BadRequest("consulta não existe");
+        var consulta = await _repository.GetConsultaByIdAsync(id);
+        if (consulta == null)
+            return NotFound("Consulta não encontrada.");
 
-         await _repository.CancelarConsultaAsync(id);
+        await _repository.CancelarConsultaAsync(id);
         return Ok(consulta);
     }
 
-    [HttpPost("criarconsulta")]
-    public async Task<ActionResult<Consulta>> criarConsulta(CriarConsultaDTO dto)
+    // POST: api/paciente/consulta
+    [HttpPost("consulta")]
+    public async Task<ActionResult<Consulta>> CriarConsulta([FromBody] CriarConsultaDTO dto)
     {
-       var paciente = await _repository.GetByIdAsync(dto.PacienteId);
-        if (paciente is null) return NotFound("paciente não encontrado");
+        var paciente = await _repository.GetByIdAsync(dto.PacienteId);
+        if (paciente == null)
+            return NotFound("Paciente não encontrado.");
 
         var profissional = await _profissionalDesaudeRepository.GetByIdAsync(dto.ProfissionalSaudeId);
-        Console.WriteLine(profissional);
-        if (profissional is null) return NotFound("profissional não encontrado");
+        if (profissional == null)
+            return NotFound("Profissional não encontrado.");
+
         var novaConsulta = new Consulta
         {
             DataHora = dto.DataConsulta,
@@ -138,23 +148,21 @@ public class PacienteController : ControllerBase
             ProfissionalSaudeId = dto.ProfissionalSaudeId,
             Observacoes = dto.Observacoes,
             Status = StatusConsulta.Agendado
+        };
 
-
-        }
-        ;
-         await _repository.CriarConsultaAsync(novaConsulta);
-        return CreatedAtAction(nameof(criarConsulta), new { id = novaConsulta.Id }, novaConsulta);
+        await _repository.CriarConsultaAsync(novaConsulta);
+        return CreatedAtAction(nameof(CriarConsulta), new { id = novaConsulta.Id }, novaConsulta);
     }
 
-    [HttpGet("getHistorico")]
+    // GET: api/paciente/{id}/historico
+    [HttpGet("{id}/historico")]
     public async Task<ActionResult<Historico>> GetHistorico(int id)
     {
-       var paciente =  await _repository.GetByIdAsync(id);
+        var paciente = await _repository.GetByIdAsync(id);
+        if (paciente == null)
+            return NotFound("Paciente não encontrado.");
 
-        if (paciente == null) return NotFound("pacinete não existe");
-
-        var resultado = await _repository.GetHistoricoAsync(id);
-        return Ok(resultado);
-
+        var historico = await _repository.GetHistoricoAsync(id);
+        return Ok(historico);
     }
 }

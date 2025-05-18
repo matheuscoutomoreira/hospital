@@ -16,12 +16,7 @@ namespace serviçohospital.RepositoryImplementation
             _context = context;
         }
 
-      
-
-       
-
-       
-        
+     
 
        
 
