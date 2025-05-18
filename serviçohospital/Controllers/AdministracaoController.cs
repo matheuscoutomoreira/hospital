@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using serviçohospital.Models;
 using serviçohospital.Repository;
 
 namespace serviçohospital.Controllers;
-
+[Authorize(Roles = "Administrador")]
 [ApiController]
 [Route("api/[controller]")]
 public class Administracao : ControllerBase
@@ -40,14 +41,14 @@ public class Administracao : ControllerBase
         return CreatedAtAction(nameof(GetProfissional), new { id = profissional.Id }, profissional);
     }
 
-    [HttpPatch("cancelarconsulta")]
+    [HttpPatch("CancelarConsulta")]
     public async Task<ActionResult> CancelarConsulta(int idconsulta)
     {
         await _repository.CancelarConsultaAsync(idconsulta);
         return Ok("Consulta cancelada com sucesso");
     }
 
-    [HttpDelete("apagarpaciente")]
+    [HttpDelete("ApagarPaciente")]
     public async Task<ActionResult> ApagarPaciente(int id)
     {
         if (id == 0) return BadRequest("Digite um número válido");
@@ -55,7 +56,7 @@ public class Administracao : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("apagarprofissional")]
+    [HttpDelete("ApagarProfissional")]
     public async Task<ActionResult> Apagarprofissional(int id)
     {
         if (id == 0) return BadRequest("Digite um número válido");
@@ -63,7 +64,7 @@ public class Administracao : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("editarpaciente")]
+    [HttpPatch("EditarPaciente")]
     public async Task<ActionResult> EditarPaciente([FromBody] Paciente paciente)
     {
         if (paciente == null) return BadRequest("Paciente inválido");
@@ -79,7 +80,7 @@ public class Administracao : ControllerBase
         return Ok("Paciente alterado com sucesso.");
     }
 
-    [HttpPatch("editarprofissional")]
+    [HttpPatch("EditarProfissional")]
     public async Task<ActionResult> EditarProfissional([FromBody] ProfissionalSaude profissionalSaude)
     {
         if (profissionalSaude == null) return BadRequest("Profissional inválido");
@@ -108,14 +109,14 @@ public class Administracao : ControllerBase
         return Ok(profissional);
     }
 
-    [HttpGet("getlistaconsultas")]
+    [HttpGet("GetListaConsultas")]
     public async Task<ActionResult<List<Consulta>>> GetConsultaslista()
     {
         var listaconsultas = await _repository.ListarConsultasAsync();
         return Ok(listaconsultas.ToList());
     }
 
-    [HttpGet("getlistapaciente")]
+    [HttpGet("GetlistaPaciente")]
     public async Task<ActionResult<List<Paciente>>> Getpacienteslista()
     {
         var listapacientes = await _repository.ListarPacientesAsync();
@@ -131,7 +132,7 @@ public class Administracao : ControllerBase
         return Ok(listapacientes.ToList());
     }
 
-    [HttpGet("getlistaprofissionais")]
+    [HttpGet("GetlistaProfissionais")]
     public async Task<ActionResult<List<ProfissionalSaude>>> Getprofissionaislista()
     {
         var listaprofissionais = await _repository.ListarProfissionaisAsync();

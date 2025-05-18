@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using serviçohospital.Models;
 using serviçohospital.Repository;
 using System;
 using System.Threading.Tasks;
 
 namespace serviçohospital.Controllers;
-
+[Authorize(Roles = "Paciente")]
 [ApiController]
 [Route("api/[controller]")]
 public class PacienteController : ControllerBase
@@ -49,6 +50,18 @@ public class PacienteController : ControllerBase
         var paciente = await _repository.BuscarPorNomeAsync(nome);
         if (paciente == null)
             return NotFound($"Paciente com o nome {nome} não encontrado.");
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(paciente.CPF))
+                paciente.CPF = CriptografiaHelper.Descriptografar(paciente.CPF);
+
+            if (!string.IsNullOrWhiteSpace(paciente.Telefone))
+                paciente.Telefone = CriptografiaHelper.Descriptografar(paciente.Telefone);
+        }
+        catch
+        {
+            return BadRequest("Erro ao descriptografar os dados. Verifique se estão corretamente armazenados.");
+        }
         return Ok(paciente);
     }
 

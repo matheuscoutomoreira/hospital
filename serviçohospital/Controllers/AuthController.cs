@@ -7,9 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
-using System.IdentityModel.Tokens;
-using SymmetricSecurityKey = Microsoft.IdentityModel.Tokens.SymmetricSecurityKey;
-using serviçohospital.Crypto; // Certifique-se de que o pacote BCrypt.Net-Next está instalado
+using serviçohospital.Crypto;
+using serviçohospital.Services; // Namespace onde está JwtService
 
 namespace serviçohospital.Controllers;
 
@@ -19,11 +18,13 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly JwtService _jwtService;
 
-    public AuthController(AppDbContext context, IConfiguration configuration)
+    public AuthController(AppDbContext context, IConfiguration configuration, JwtService jwtService)
     {
         _context = context;
         _configuration = configuration;
+        _jwtService = jwtService;
     }
 
     [HttpPost("register")]
@@ -52,37 +53,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public IActionResult Login([FromBody] LoginDTO login)
     {
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login.Email);
+        if (usuario == null || !BCrypt.Net.BCrypt.Verify(login.Senha, usuario.Senha))
+            return Unauthorized("Credenciais inválidas.");
 
-        if (usuario == null || !BCrypt.Net.BCrypt.Verify(request.Senha, usuario.Senha))
-            return Unauthorized("Email ou senha inválidos.");
-
-        var token = GerarToken(usuario);
+        var token = _jwtService.GerarToken(usuario);
         return Ok(new { token });
-    }
-
-    private string GerarToken(Usuario usuario)
-    {
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-            new Claim(ClaimTypes.Name, usuario.Nome),
-            new Claim(ClaimTypes.Role, usuario.Tipo.ToString())
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
