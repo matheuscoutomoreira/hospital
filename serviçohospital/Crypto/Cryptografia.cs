@@ -5,13 +5,13 @@ using System.Text;
 
 public static class CriptografiaHelper
 {
-    // Senha secreta para gerar a chave AES
+    //  gera a chave AES
     private static readonly string senhaSecreta = "MinhaSenhaSuperSecreta123!";
 
-    // Gera a chave de 32 bytes usando SHA-256 a partir da senha
+    // Gera a chave de 32 bytes 
     private static readonly byte[] Key = GenerateKey(senhaSecreta);
 
-    // Vetor de inicialização fixo de 16 bytes (pode ser zeros para simplificação)
+   
     private static readonly byte[] IV = new byte[16];
 
     private static byte[] GenerateKey(string password)

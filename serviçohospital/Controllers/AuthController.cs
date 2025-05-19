@@ -8,7 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
 using serviçohospital.Crypto;
-using serviçohospital.Services; // Namespace onde está JwtService
+using serviçohospital.Services; 
 
 namespace serviçohospital.Controllers;
 

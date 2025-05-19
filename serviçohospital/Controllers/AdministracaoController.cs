@@ -103,7 +103,7 @@ public class Administracao : ControllerBase
         var profissional = await _repository.GetProfissional(id);
         if (profissional == null) return NotFound("Profissional não encontrado.");
 
-        // Descriptografar dados sensíveis antes de retornar
+      
         profissional.CRM = CriptografiaHelper.Descriptografar(profissional.CRM);
 
         return Ok(profissional);
@@ -122,7 +122,7 @@ public class Administracao : ControllerBase
         var listapacientes = await _repository.ListarPacientesAsync();
         if (listapacientes == null) return NotFound("Pacientes não existem");
 
-        // Se quiser descriptografar CPF/Telefone dos pacientes aqui, faça um loop e descriptografe (opcional)
+     
         foreach (var paciente in listapacientes)
         {
             paciente.CPF = CriptografiaHelper.Descriptografar(paciente.CPF);

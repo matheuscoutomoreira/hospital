@@ -72,20 +72,8 @@ namespace serviçohospital.Controllers
             if (agenda is null)
                 return NotFound("Agenda está vazia");
 
-            try
-            {
-                // Se precisar descriptografar dados nas consultas da agenda, faça aqui.
-                // Exemplo:
-                // foreach(var consulta in agenda)
-                // {
-                //     if (!string.IsNullOrWhiteSpace(consulta.CampoCriptografado))
-                //         consulta.CampoCriptografado = CriptografiaHelper.Descriptografar(consulta.CampoCriptografado);
-                // }
-            }
-            catch
-            {
-                return BadRequest("Erro ao descriptografar os dados da agenda.");
-            }
+            
+         
 
             return Ok(agenda);
         }
