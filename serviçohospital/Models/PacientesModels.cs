@@ -18,10 +18,10 @@ public class Paciente
     [Required]
     [MaxLength(15)]
     public string Telefone { get; set; }
-    // relacionamento com consulta (1/n)
+    
     [JsonIgnore]
     public List<Consulta> Consultas { get; set; } = new List<Consulta>();
-    // Relacionamento com histórico (1:1)
+    
     [JsonIgnore]
-    public virtual Historico? Historico { get; set; }  // <-- Adicione isto
+    public virtual Historico? Historico { get; set; }  
 }

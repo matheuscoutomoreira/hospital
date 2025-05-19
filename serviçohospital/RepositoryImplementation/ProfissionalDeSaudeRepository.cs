@@ -53,7 +53,7 @@ namespace serviçohospital.RepositoryImplementation
                 return consulta;
             }
 
-            return null; // retorno explícito se não encontrado
+            return null; 
         }
 
 
